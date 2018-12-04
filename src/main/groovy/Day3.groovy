@@ -80,7 +80,7 @@ class Day3 {
         @Override
         String toString() {
             final StringBuilder sb = new StringBuilder("Claim{");
-            sb.append("id=").append(id);
+            sb.append("guardId=").append(id);
             sb.append(", x=").append(x);
             sb.append(", y=").append(y);
             sb.append(", w=").append(w);
