@@ -20,6 +20,57 @@ class Day4 {
         guardId * minute
     }
 
+    static def test2(String input) {
+
+        List records = input.readLines().collect { Record.from(it) }
+        records.sort(true)
+
+        topMinuteAndGuard(records)
+    }
+
+    static int topMinuteAndGuard(final List<Record> records) {
+        Map<Integer, Integer> sleeps = [:]
+        int currentGuardId
+        LocalDateTime asleepAt
+        for (Record record : records) {
+            record.with {
+                switch (type) {
+                    case SHIFT:
+                        currentGuardId = guardId
+                        break
+                    case ASLEEP:
+                        asleepAt = dt
+                        break
+                    case WAKE_UP:
+                        asleepAt.upto(dt.minusMinutes(1), ChronoUnit.MINUTES, {
+                            sleeps.merge(it.minute, [(currentGuardId): 1], { m1, m2 ->
+                                if (m1.containsKey(currentGuardId)) {
+                                    m1[(currentGuardId)] += 1
+                                } else {
+                                    m1 << m2
+                                }
+                                m1
+                            })
+                        })
+                        break
+                }
+            }
+        }
+
+        def maxSleepTimes = -1
+        def minute = -1
+        def guardId = -1
+        sleeps.each { int k, Map v ->
+            def guardAndTimeEntry = v.max { it.value }
+            if (maxSleepTimes < guardAndTimeEntry.value) {
+                maxSleepTimes = guardAndTimeEntry.value
+                guardId = guardAndTimeEntry.key
+                minute = k
+            }
+        }
+        minute * guardId
+    }
+
     private static int getGuardSleepingTheMost(List<Record> records) {
         Map<Integer, Integer> totalSleep = [:]
         int currentGuardId
@@ -56,7 +107,8 @@ class Day4 {
                         break
                     case WAKE_UP:
                         asleepAt.upto(dt.minusMinutes(1), ChronoUnit.MINUTES, {
-                            minutes.merge(it.minute, 1, SUM) })
+                            minutes.merge(it.minute, 1, SUM)
+                        })
                         break
                 }
             }

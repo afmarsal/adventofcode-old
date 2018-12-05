@@ -13,6 +13,17 @@ class Day4Test extends Specification {
             FINAL_INPUT  | 85296
     }
 
+    def "test 2"() {
+
+        expect:
+            Day4.test2(input) == output
+
+        where:
+            input        | output
+            SAMPLE_INPUT | 4455
+            FINAL_INPUT  | 58559
+    }
+
     static final SAMPLE_INPUT = '''\
         [1518-11-01 00:00] Guard #10 begins shift
         [1518-11-01 00:05] falls asleep
