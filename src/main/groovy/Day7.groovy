@@ -2,6 +2,67 @@ class Day7 {
 
     static String test1(String input) {
 
+        def candidates = readStepsAndGetRoots(input)
+
+        Set<Step> finished = []
+        StringBuilder result = new StringBuilder("")
+
+        while (candidates) {
+            def toBeRemoved = findNextCandidate(candidates)
+            candidates.remove toBeRemoved
+            finished << toBeRemoved
+            if (toBeRemoved.children) {
+                candidates.addAll toBeRemoved.children.findAll { it.parents.every { finished.contains(it) } }
+            }
+            result << toBeRemoved.name
+        }
+        result
+    }
+
+    static int OFFSET
+
+    static String test2(String input, int workers, int offset) {
+        OFFSET = offset
+        def candidates = readStepsAndGetRoots(input)
+
+        List<WorkingStep> working = []
+        Set<Step> finished = []
+        StringBuilder result = new StringBuilder("")
+
+        def second = 0
+        while (candidates || working) {
+            // Check finished
+            println "$second: Idle: $workers, result: $result, Working on $working "
+            List<WorkingStep> haveFinished = working.findAll { it.hasFinishedAt(second) }
+            if (haveFinished) {
+                println "${second-1}: Finished workers: $haveFinished"
+                finished.addAll haveFinished*.step
+                candidates.addAll haveFinished*.step.children.flatten().findAll { it.parents.every { finished.contains(it) } }
+                working.removeAll haveFinished
+                workers += haveFinished.size()
+                result << haveFinished.collect { it.step.name }.sort().join()
+            }
+            // Check if any can start
+            if (candidates && workers > 0) {
+                def candidate = findNextCandidate(candidates)
+                def workingStep = new WorkingStep(step: candidate, startedAt: second)
+                working << workingStep
+                --workers
+                candidates.remove candidate
+                println "$second: Adding new working item at $second -> $workingStep"
+            } else {
+                second++
+            }
+        }
+        println "$second: Idle: $workers, result: $result, Working on $working "
+        result
+    }
+
+    private static Step findNextCandidate(List<Step> candidates) {
+        candidates.min { a, b -> a.name.compareTo(b.name) }
+    }
+
+    private static List<Step> readStepsAndGetRoots(String input) {
         Map<String, Step> steps = [:]
         input.readLines().each {
             def m = it =~ /Step (\w) must be finished before step (\w) can begin./
@@ -11,22 +72,9 @@ class Day7 {
             parent.children << child
             child.parents << parent
         }
+        // Get root steps (steps without parents)
+        steps.values().findAll { !it.parents }
 
-        def roots = steps.findAll { !it.value.parents }
-        Set<Step> candidates = roots*.value
-        Set<Step> used = []
-
-        StringBuilder result = new StringBuilder("")
-        while (candidates) {
-            def min = candidates.min { a, b -> a.name.compareTo(b.name) }
-            candidates.remove min
-            used << min
-            if (min.children) {
-                candidates.addAll min.children.findAll { it.parents.every { used.contains(it) } }
-            }
-            result << min.name
-        }
-        result
     }
 
     static class Step {
@@ -61,6 +109,24 @@ class Day7 {
             sb.append(", parents=").append(parents*.name.join(","));
             sb.append(", children=").append(children*.name.join(","));
             sb.append("}\n");
+            return sb.toString();
+        }
+    }
+
+    static class WorkingStep {
+        int startedAt
+        Step step
+
+        boolean hasFinishedAt(def currentTime) {
+            currentTime > startedAt + OFFSET + (step.name.toCharacter() - "A".toCharacter())
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("WorkingStep{");
+            sb.append("step=").append(step.name);
+            sb.append(", startedAt=").append(startedAt);
+            sb.append('}');
             return sb.toString();
         }
     }

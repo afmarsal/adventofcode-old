@@ -13,6 +13,17 @@ class Day7Test extends Specification {
             FINAL_INPUT  | "BKCJMSDVGHQRXFYZOAULPIEWTN"
     }
 
+    def "test 2"() {
+
+        expect:
+            Day7.test2(input, workers, offset) == output
+
+        where:
+            input        | workers | offset | output
+            SAMPLE_INPUT | 2       | 0      | "CABFDE"
+            FINAL_INPUT  | 5       | 60     | "BKVCMSGHJDQXZRFYOAULPIEWTN"
+    }
+
     private static final String SAMPLE_INPUT = '''\
         Step C must be finished before step A can begin.
         Step C must be finished before step F can begin.
