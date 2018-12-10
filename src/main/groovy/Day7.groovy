@@ -21,40 +21,39 @@ class Day7 {
 
     static int OFFSET
 
-    static String test2(String input, int workers, int offset) {
+    static String test2(String input, int availableWorkers, int offset) {
         OFFSET = offset
-        def candidates = readStepsAndGetRoots(input)
+        def candidateSteps = readStepsAndGetRoots(input)
 
-        List<WorkingStep> working = []
-        Set<Step> finished = []
+        List<WorkingStep> stepsInProgress = []
+        Set<Step> finishedSteps = []
         StringBuilder result = new StringBuilder("")
 
         def second = 0
-        while (candidates || working) {
+        while (candidateSteps || stepsInProgress) {
+            println "$second: Idle: $availableWorkers, result: $result, Working on: ${stepsInProgress*.step.name.join()}, candidates: ${candidateSteps*.name.join(",")}"
+            // Check which can star
+            while (candidateSteps && availableWorkers > 0) {
+                def candidate = findNextCandidate(candidateSteps)
+                def workingStep = new WorkingStep(step: candidate, startedAt: second)
+                stepsInProgress << workingStep
+                --availableWorkers
+                candidateSteps.remove candidate
+                println "$second: Adding new working item: $workingStep"
+            }
             // Check finished
-            println "$second: Idle: $workers, result: $result, Working on $working "
-            List<WorkingStep> haveFinished = working.findAll { it.hasFinishedAt(second) }
+            List<WorkingStep> haveFinished = stepsInProgress.findAll { it.hasFinishedAt(second) }
             if (haveFinished) {
-                println "${second-1}: Finished workers: $haveFinished"
-                finished.addAll haveFinished*.step
-                candidates.addAll haveFinished*.step.children.flatten().findAll { it.parents.every { finished.contains(it) } }
-                working.removeAll haveFinished
-                workers += haveFinished.size()
+                println "${second}: Finished workers: $haveFinished"
+                finishedSteps.addAll haveFinished*.step
+                candidateSteps.addAll haveFinished*.step.children.flatten().findAll { it.parents.every { finishedSteps.contains(it) } }
+                stepsInProgress.removeAll haveFinished
+                availableWorkers += haveFinished.size()
                 result << haveFinished.collect { it.step.name }.sort().join()
             }
-            // Check if any can start
-            if (candidates && workers > 0) {
-                def candidate = findNextCandidate(candidates)
-                def workingStep = new WorkingStep(step: candidate, startedAt: second)
-                working << workingStep
-                --workers
-                candidates.remove candidate
-                println "$second: Adding new working item at $second -> $workingStep"
-            } else {
-                second++
-            }
+            ++second
         }
-        println "$second: Idle: $workers, result: $result, Working on $working "
+        println "$second: Idle: $availableWorkers, result: $result, Working on $stepsInProgress "
         result
     }
 
@@ -118,13 +117,15 @@ class Day7 {
         Step step
 
         boolean hasFinishedAt(def currentTime) {
-            currentTime > startedAt + OFFSET + (step.name.toCharacter() - "A".toCharacter())
+            currentTime == startedAt + OFFSET + (step.name.toCharacter() - "A".toCharacter())
         }
 
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("WorkingStep{");
-            sb.append("step=").append(step.name);
+            sb.append("step=").append(step.name)
+            sb.append(",parents: ${step.parents*.name.join(",")}")
+            sb.append(",children: ${step.children*.name.join(",")}")
             sb.append(", startedAt=").append(startedAt);
             sb.append('}');
             return sb.toString();

@@ -20,7 +20,7 @@ class Day7Test extends Specification {
 
         where:
             input        | workers | offset | output
-            SAMPLE_INPUT | 2       | 0      | "CABFDE"
+//            SAMPLE_INPUT | 2       | 1      | "CABFDE"
             FINAL_INPUT  | 5       | 60     | "BKVCMSGHJDQXZRFYOAULPIEWTN"
     }
 
