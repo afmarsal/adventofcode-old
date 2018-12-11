@@ -21,7 +21,7 @@ class Day7 {
 
     static int OFFSET
 
-    static String test2(String input, int availableWorkers, int offset) {
+    static int test2(String input, int availableWorkers, int offset) {
         OFFSET = offset
         def candidateSteps = readStepsAndGetRoots(input)
 
@@ -31,7 +31,7 @@ class Day7 {
 
         def second = 0
         while (candidateSteps || stepsInProgress) {
-            println "$second: Idle: $availableWorkers, result: $result, Working on: ${stepsInProgress*.step.name.join()}, candidates: ${candidateSteps*.name.join(",")}"
+//            println "$second: Idle: $availableWorkers, result: $result, Working on: ${stepsInProgress*.step.name.join()}, candidates: ${candidateSteps*.name.join(",")}"
             // Check which can star
             while (candidateSteps && availableWorkers > 0) {
                 def candidate = findNextCandidate(candidateSteps)
@@ -39,22 +39,22 @@ class Day7 {
                 stepsInProgress << workingStep
                 --availableWorkers
                 candidateSteps.remove candidate
-                println "$second: Adding new working item: $workingStep"
+//                println "$second: Adding new working item: $workingStep"
             }
             // Check finished
             List<WorkingStep> haveFinished = stepsInProgress.findAll { it.hasFinishedAt(second) }
             if (haveFinished) {
-                println "${second}: Finished workers: $haveFinished"
+//                println "${second}: Finished workers: $haveFinished"
+                stepsInProgress.removeAll haveFinished
                 finishedSteps.addAll haveFinished*.step
                 candidateSteps.addAll haveFinished*.step.children.flatten().findAll { it.parents.every { finishedSteps.contains(it) } }
-                stepsInProgress.removeAll haveFinished
                 availableWorkers += haveFinished.size()
                 result << haveFinished.collect { it.step.name }.sort().join()
             }
             ++second
         }
-        println "$second: Idle: $availableWorkers, result: $result, Working on $stepsInProgress "
-        result
+//        println "$second: Idle: $availableWorkers, result: $result, Working on $stepsInProgress "
+        second
     }
 
     private static Step findNextCandidate(List<Step> candidates) {
