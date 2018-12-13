@@ -1,24 +1,9 @@
 class Day6 {
 
     static def test1(String input) {
-        def cells = input.readLines().collect { Cell.from(it) }.toSet()
 
-        def minX = cells.min { it.x }.x
-        def minY = cells.min { it.y }.y
-        def maxX = cells.max { it.x }.x
-        def maxY = cells.max { it.y }.y
-//        println "Size: [$minX,$minY] x [$maxX, $maxY]"
-        // Skew points
-        cells.each {
-            it.x -= minX
-            it.y -= minY
-        }
-        minX = cells.min { it.x }.x
-        minY = cells.min { it.y }.y
-        maxX = cells.max { it.x }.x
-        maxY = cells.max { it.y }.y
-//        println "Size: [$minX,$minY] x [$maxX, $maxY]"
-        char[][] grid = new int[maxX + 1][maxY + 1]
+        def (cells, grid, maxX, maxY) = parseInput(input)
+
         def gridCellsByCoord = [:]
         def cellsInBorder = [] as Set
 
@@ -52,6 +37,39 @@ class Day6 {
 //        }
         gridCellsByCoord.removeAll { k, v -> k in cellsInBorder }
         gridCellsByCoord.max { it.value }.value
+    }
+
+    static def test2(String input, int maxDistance) {
+
+        def (cells, grid, maxX, maxY) = parseInput(input)
+
+        def totalCells = 0
+        for (int i = 0; i <= maxX; i++) {
+            for (int j = 0; j <= maxY; j++) {
+                def distances = cells.collect { it.distance(i, j) }.sum()
+                if (distances < maxDistance) {
+                    ++totalCells
+                }
+            }
+        }
+        totalCells
+    }
+
+    static def parseInput(String input) {
+        def cells = input.readLines().collect { Cell.from(it) }.toSet()
+
+        def minX = cells.min { it.x }.x
+        def minY = cells.min { it.y }.y
+        // Apply offset to points
+        cells.each {
+            it.x -= minX
+            it.y -= minY
+        }
+        def maxX = cells.max { it.x }.x
+        def maxY = cells.max { it.y }.y
+        char[][] grid = new int[maxX + 1][maxY + 1]
+
+        [cells, grid, maxX, maxY]
     }
 
     static class Cell {

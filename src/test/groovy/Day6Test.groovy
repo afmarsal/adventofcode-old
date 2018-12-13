@@ -13,6 +13,17 @@ class Day6Test extends Specification {
             FINAL_INPUT  | 3604
     }
 
+    def "test 2"() {
+
+        expect:
+            Day6.test2(input, maxDistance) == output
+
+        where:
+            input        | maxDistance | output
+            SAMPLE_INPUT | 32          | 16
+            FINAL_INPUT  | 10000       | 46563
+    }
+
     static final SAMPLE_INPUT = '''\
         1, 1
         1, 6
