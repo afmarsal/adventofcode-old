@@ -1,5 +1,6 @@
 package day15
 
 enum Direction {
-    UP, DOWN, LEFT, RIGHT
+    // Sorted!
+    UP, LEFT, RIGHT, DOWN
 }

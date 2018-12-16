@@ -42,7 +42,7 @@ class Board {
     }
 
     List<Position> freeAdjacentPosFor(Position position) {
-        possibleStepsFrom(stepOf(position, null), []).collect { it.position }
+        possibleStepsFrom(position).collect { it.position }
     }
 
     boolean isCase(Position position) {
@@ -76,7 +76,7 @@ class Board {
 
     Direction bestDirection(Position from, Collection<Position> possibleDestinations) {
 
-        def firstSteps = possibleStepsFrom(stepOf(from, null), [])
+        def firstSteps = possibleStepsFrom(from)
         firstSteps.each { it.isFirst = true }
 
         def alreadyVisited = [from] as Set
@@ -89,6 +89,7 @@ class Board {
 
         List<Step> nextSteps = []
         List<Step> finalSteps = []
+        def visited = [] as Set
         for (Step step : steps) {
             if (step.position in possibleDestinations) {
                 finalSteps << step
@@ -96,17 +97,19 @@ class Board {
             }
             def nextStepsFromCurrent = possibleStepsFrom(step, alreadyVisited)
             nextSteps.addAll(nextStepsFromCurrent)
-            alreadyVisited.addAll(nextSteps.collect { it.position })
+            visited << step.position
         }
         if (!finalSteps.empty) {
-            // There's a tie for several target positions. Choose the first one in reading order
-            def chosenStep = finalSteps.min { it.position }
-            return getRouteFor(chosenStep)
+            // There's a tie for several target positions. Choose the steps to the min position
+            def minPosition = finalSteps.collect { it.position }.min()
+            def chosenSteps = finalSteps.findAll { it.position == minPosition }
+            return chosenSteps.collect { getRouteFor(it) }.min {it.direction}
         }
         if (nextSteps.empty) {
-            log "Could not find next steps"
+//            log "Could not find next steps"
             return null
         }
+        alreadyVisited.addAll(visited)
         nextStepsInRoute(nextSteps, possibleDestinations, alreadyVisited)
     }
 
@@ -114,17 +117,17 @@ class Board {
         def directions = []
         Step current = step
         directions << current.direction
-        int preventInfinite = 0
-        while (!current.isFirst && preventInfinite++ < 2000) {
+        while (!current.isFirst) {
             current = current.previous
             directions << current.direction
         }
-        if (preventInfinite >= 2000) {
-            throw new RuntimeException("Something wen wrong")
-        }
-        directions.reverse(true)
-        log "Found route (distance: ${step.distance}: ${directions.join(" -> ")}"
+//        directions.reverse(true)
+//        log "Found route (distance: ${step.distance}: ${directions.join(" -> ")}"
         new Route(distance: step.distance, direction: current.direction)
+    }
+
+    List<Step> possibleStepsFrom(Position position) {
+        possibleStepsFrom(stepOf(position, null), [])
     }
 
     List<Step> possibleStepsFrom(Step step, def exclude) {

@@ -19,7 +19,7 @@ class Player {
 
     def attacked() {
         hitPoints -=3
-        log "${this} has been attacked"
+//        log "${this} has been attacked"
     }
 
     def move(Direction direction) {
