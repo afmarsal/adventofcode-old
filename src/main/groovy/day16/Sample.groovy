@@ -7,15 +7,22 @@ class Sample {
 
 
     def matchesMoreThan3AfterRunning() {
-        Map<int[], Integer> results = [:]
+        Map results = getResultMap()[0]
+        results.any { it.value >= 3 }
+    }
+
+    def getResultMap() {
+        Map<List, Integer> validOutputCounts = [:]
+        List possibleOps = []
         Op.values().each { op ->
             def input = registersBefore.clone()
             def output = op.run(input, instruction)
             if (output == registersAfter) {
-                results.merge(output, 1, {v1, v2 -> v1 + v2})
+                validOutputCounts.merge(output, 1, { v1, v2 -> v1 + v2 })
+                possibleOps << op
             }
         }
-        results.any { it.value >= 3 }
+        [validOutputCounts, instruction.opCode, possibleOps]
     }
 
 
