@@ -2,7 +2,7 @@ import day15.Board
 import day15.Direction
 import day15.Player
 
-import static day15.Logger.log
+import static util.Logger.log
 
 class Day15 {
 

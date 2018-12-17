@@ -1,4 +1,4 @@
-package day15
+package util
 
 class Logger {
 

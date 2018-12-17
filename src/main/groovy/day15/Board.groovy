@@ -1,7 +1,7 @@
 package day15
 
 import static day15.Direction.*
-import static day15.Logger.log
+import static util.Logger.log
 import static day15.Step.stepOf
 
 class Board {
