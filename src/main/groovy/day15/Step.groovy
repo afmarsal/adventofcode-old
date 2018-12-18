@@ -1,5 +1,8 @@
 package day15
 
+import util.Direction
+import util.Position
+
 class Step {
 
     Position position

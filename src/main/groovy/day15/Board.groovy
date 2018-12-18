@@ -1,6 +1,9 @@
 package day15
 
-import static day15.Direction.*
+import util.Direction
+import util.Position
+
+import static util.Direction.*
 import static util.Logger.log
 import static day15.Step.stepOf
 

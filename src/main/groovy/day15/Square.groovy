@@ -1,7 +1,9 @@
 package day15
 
+import util.Position
+
 import static day15.PointType.OPEN
-import static day15.Position.posOf
+import static util.Position.posOf
 
 class Square {
 

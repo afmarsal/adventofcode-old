@@ -1,6 +1,6 @@
-package day15
+package util
 
 enum Direction {
-    // Sorted!
+    // Sorted for Day15!
     UP, LEFT, RIGHT, DOWN
 }

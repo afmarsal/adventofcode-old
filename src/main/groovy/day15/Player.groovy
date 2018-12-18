@@ -1,7 +1,10 @@
 package day15
 
-import static day15.Direction.*
-import static day15.Position.posOf
+import util.Direction
+import util.Position
+
+import static util.Direction.*
+import static util.Position.posOf
 
 class Player {
     Team team

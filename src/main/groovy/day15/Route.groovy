@@ -1,5 +1,7 @@
 package day15
 
+import util.Direction
+
 class Route {
 
     int distance

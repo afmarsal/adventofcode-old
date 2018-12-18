@@ -1,5 +1,5 @@
 import day15.Board
-import day15.Direction
+import util.Direction
 import day15.Player
 
 import static util.Logger.log
