@@ -66,6 +66,7 @@ class Grid2D {
     def printHeader() {
         log "Grid with size [${width}x${height}]"
     }
+
     def print(Position pos = null) {
         def sb = new StringBuilder("  ")
         0.upto(width - 1) { sb.append("${it % 10} ") }
@@ -84,11 +85,30 @@ class Grid2D {
         log sb.toString()
     }
 
-    def eacCellContent(Closure closure) {
+    def eachCellContent(Closure closure) {
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 closure.call(this[row, col])
             }
         }
+    }
+
+    String toSingleLine() {
+        StringBuilder builder = new StringBuilder()
+        this.eachCellContent { builder.append(it) }
+        builder.toString()
+    }
+
+    boolean equals(final o) {
+        if (this.is(o)) return true
+        if (getClass() != o.class) return false
+
+        Grid2D grid2D = (Grid2D) o
+
+        this.toSingleLine() == grid2D.toSingleLine()
+    }
+
+    int hashCode() {
+        return (toSingleLine() != null ? toSingleLine().hashCode() : 0)
     }
 }

@@ -5,7 +5,7 @@ import spock.lang.Specification
 
 class Day18Test extends Specification {
 
-    def test18() {
+    def test181() {
         expect:
             Day18.test1(input, rounds) == output
 
@@ -15,6 +15,18 @@ class Day18Test extends Specification {
 //            SAMPLE_INPUT_2 | 57
             FINAL_INPUT    | 10     | 594712
             MARCAL_INPUT   | 10     | 519552
+    }
+
+    def test182() {
+        expect:
+            Day18.test2(input) == output
+
+        where:
+            input           | output
+//            SAMPLE_INPUT_1 | 10     | 1147
+//            SAMPLE_INPUT_2 | 57
+//            FINAL_INPUT    |  203138
+            MARCAL_INPUT  | 165376
     }
 
     static final SAMPLE_INPUT_1 = '''\
