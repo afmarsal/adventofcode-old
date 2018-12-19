@@ -17,78 +17,53 @@ class Day19Test extends Specification {
 //            MARCAL   | 2040
     }
 
+    /**
+     * Final input looks like this in pseudo code
+     main:
+     f17()
+
+     def f01-02() {
+     01: r4 = 1
+     f2()
+     }
+
+     def f2() {
+     02: r2 = 1
+     f03-f11()
+     }
+     def f03-13() {}
+     03: r1 = r4 * r2 // r4 = 1 => r1 = r2
+     04: r1 = (r1 == r5) ? 1 : 0
+     if (r5 == r1) {
+     07:     r0 = r4 + r0
+     }
+     08: r2 = r2 + 1
+     09: r1 = r2 > r5 ? 1 : 0
+     if (r2 <= r5) {
+     11:    f03-11()
+     } else {
+     12:    r4 = r4 + 1
+     13:    r1 = (r4 > r5) ? 1 : 0
+     14:    if (r4 <= r5) {
+     15:       f01-02()
+     } else {
+     16:        EXIT!!!
+     }
+     }
+     }
+        r0 accumulates ALL the divisors of r5
+     * @return
+     */
     def "test 19.2"() {
-        /**
+        expect:
+            Day19.test2(input) == output
 
-         1,0,0,0,0,0
-
-         0: reg3 = reg3 + 16              // ip = (reg3 + 16) + 1
-         1: reg4 = 1                        // ip++
-         2: reg2 = 1                        // ip++
-         3: reg1 = reg4 * reg2          // ip++
-         4: reg1 = reg1 == reg5 ? 1 : 0 // ip++
-         5: reg3 = reg1 + reg3          // ip = ip + reg1 + 1
-         6: reg3 = reg3 + 1              // ip = ip + 1 <=> ip += 2
-         7: reg0 = reg4 + reg0         // ip++
-         8: reg2 = reg2 + 1               // ip++
-         9: reg1 = (reg2 > reg5)? 1 : 0 // ip++
-         10: reg3 = reg3 + reg1        // ip = ip + reg1 + 1
-         11: reg3 = 2                      // ip = 2
-         12: reg4 = reg1 + reg4        // ip++
-         13: reg1 = (reg4 > reg5)? 1 : 0 // ip++
-         14: reg3 = reg1 + reg3        // ip = ip + reg1 + 1
-         15: reg3 = 1                      // ip = 1
-         16: reg3 = reg3 * reg3        // ip = ip * ip + 1
-         17: reg5 = reg5 + 2             // ip++
-         18: reg5 = reg5 * reg5        // ip++
-         19: reg5 = reg3 * reg5        // ip++
-         20: reg5 = reg5 * 11            // ip++
-         21: reg1 = reg1 + 6             // ip++
-         22: reg1 = reg1 * reg3        // ip++
-         23: reg1 = reg1 + 13            // ip++
-         24: reg5 = reg1 + reg5        // ip++
-         25: reg3 = reg3 + reg0        // ip = ip + reg0 + 1
-         26: reg3 = 0                      // ip = 0
-         27: reg3 = reg1                 // ip = reg1 + 1
-         28: reg1 = reg3 * reg1        // ip++
-         29: reg1 = reg3 + reg1        // ip = ip + reg0 + 1
-         30: reg1 = reg3 * reg1        // ip++
-         31: reg1 = reg3 * 14            // ip++
-         32: reg1 = reg1 * reg3        // ip++
-         33: reg5 = reg1 + reg5        // ip++
-         34: reg0 = 0                      // ip++
-         35: reg3 = 0                      // ip = 0
-
-
-         0:
-         r3 += 16    // it = 1 -> ip = 17
-
-         17:  // it 0
-         r5 += 2     // ip = 18
-         r5 *= r5  // ip = 19
-         r5 *= r3  // ip = 20
-         r5 *= 11    // ip = 21
-         r1 += 6     // ip = 22
-         r1 *= r3  // ip = 23
-         r1 += 13    // ip = 24
-         r5 += r1  // ip = 25
-         r3 += r0  // ip = ip + r0 + 1
-
-         27: // it 0
-         r3 = r1 // ip = 28
-         28:
-         r1 *= r3     // ip = 29
-         r1 += r3     // ip = 30
-         r1 *= r3      // ip = 31
-         r1 = r3 * 14 // ip = 32
-         r1 *= r3
-         r5 += r1
-         r0 = 0
-         r3 = 0      // ip = 0
-
-
-
-         */
+        where:
+            input          | output
+//            SAMPLE_INPUT_1 | 6
+//            SAMPLE_INPUT_2
+            FINAL_INPUT    | 14266944
+//            MARCAL   | 25165632
     }
 
     static final SAMPLE_INPUT_1 = '''\
