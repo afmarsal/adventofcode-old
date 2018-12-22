@@ -72,13 +72,31 @@ class Grid2D {
         0.upto(width - 1) { sb.append("${it % 10} ") }
         sb.append("\n")
         for (int row = 0; row < height; row++) {
-            sb.append("${row % 10} ")
+            sb.append("${row % 10}")
             for (int col = 0; col < width; col++) {
-                if (posOf(col, row) == pos) {
-                    sb.append("X ")
-                } else {
-                    sb.append("${this[row, col]} ")
-                }
+//                if (posOf(col, row) == pos) {
+//                    sb.append("X ")
+//                } else {
+                    sb.append("${this[row, col]}")
+//                }
+            }
+            sb.append("\n")
+        }
+        log sb.toString()
+    }
+
+    def printTransposed(Position pos = null) {
+        def sb = new StringBuilder("  ")
+        0.upto(width - 1) { sb.append("${it % 10} ") }
+        sb.append("\n")
+        for (int row = 0; row < height; row++) {
+            sb.append("${row % 10}")
+            for (int col = 0; col < width; col++) {
+//                if (posOf(col, row) == pos) {
+//                    sb.append("X ")
+//                } else {
+                sb.append("${this[col, row]}")
+//                }
             }
             sb.append("\n")
         }
@@ -91,6 +109,16 @@ class Grid2D {
                 closure.call(this[row, col])
             }
         }
+    }
+
+    def collect(Closure closure) {
+        def result = []
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                result << closure.call(this[row, col])
+            }
+        }
+        result
     }
 
     String toSingleLine() {
