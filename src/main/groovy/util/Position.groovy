@@ -11,6 +11,11 @@ class Position implements Comparable<Position> {
         new Position(row: row, col: col)
     }
 
+    static Position posOf(int[] coord) {
+        assert coord.size() == 2
+        new Position(row: coord[0], col: coord[1])
+    }
+
     Position offsetX(int offsetX) {
         posOf(row + offsetX, col)
     }
@@ -26,6 +31,10 @@ class Position implements Comparable<Position> {
         case LEFT: return posOf(row, col - 1)
         case RIGHT: return posOf(row, col + 1)
         }
+    }
+
+    int distance(Position position) {
+        Math.abs(position.row - this.row) + Math.abs(position.col - this.col)
     }
 
     @Override

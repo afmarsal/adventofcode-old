@@ -1,7 +1,6 @@
 package util
 
 import static util.Logger.log
-import static util.Position.posOf
 
 class Grid2D {
 
@@ -14,6 +13,12 @@ class Grid2D {
     }
 
     def getAt(List coord) {
+        assert coord.size() == 2
+//        println "Grid [$width, $height]. Accessing with $coord"
+        cells[coord[0]][coord[1]]
+    }
+
+    def getAt(int[] coord) {
         assert coord.size() == 2
         cells[coord[0]][coord[1]]
     }
@@ -31,7 +36,6 @@ class Grid2D {
             throw new RuntimeException("Can't put on negative X")
         }
         if (row >= cells.size()) {
-//            log("Growing rows to ${row}")
             cells.size().upto(row) {
                 cells[it] = []
             }
@@ -72,12 +76,12 @@ class Grid2D {
         0.upto(width - 1) { sb.append("${it % 10} ") }
         sb.append("\n")
         for (int row = 0; row < height; row++) {
-            sb.append("${row % 10}")
+            sb.append("${row % 10} ")
             for (int col = 0; col < width; col++) {
 //                if (posOf(col, row) == pos) {
 //                    sb.append("X ")
 //                } else {
-                    sb.append("${this[row, col]}")
+                sb.append("${this[row, col].pic} ")
 //                }
             }
             sb.append("\n")
@@ -89,14 +93,14 @@ class Grid2D {
         def sb = new StringBuilder("  ")
         0.upto(width - 1) { sb.append("${it % 10} ") }
         sb.append("\n")
-        for (int row = 0; row < height; row++) {
-            sb.append("${row % 10}")
-            for (int col = 0; col < width; col++) {
-//                if (posOf(col, row) == pos) {
-//                    sb.append("X ")
-//                } else {
-                sb.append("${this[col, row]}")
-//                }
+        for (int row = 0; row < width; row++) {
+            sb.append("${row % 10} ")
+            for (int col = 0; col < height; col++) {
+                if (Position.posOf(col, row) == pos) {
+                    sb.append("T ")
+                } else {
+                    sb.append("${this[col, row].pic} ")
+                }
             }
             sb.append("\n")
         }
@@ -125,6 +129,24 @@ class Grid2D {
         StringBuilder builder = new StringBuilder()
         this.eachCellContent { builder.append(it) }
         builder.toString()
+    }
+
+    def get4Adjacent(Position position) {
+        def result = []
+//        println "Adjacents for $position. Grid: [${height}x${width}]"
+        if (position.row < height - 1) {
+            result << this[position.offsetX(1)]
+        } else {
+            println "!!!! Reached grid edge $position"
+        }
+        if (position.col < width - 1) {
+            result << this[position.offsetY(1)]
+        } else {
+            println "!!!! Reached grid edge $position"
+        }
+        if (position.row > 0) result << this[position.offsetX(-1)]
+        if (position.col > 0) result << this[position.offsetY(-1)]
+        result
     }
 
     boolean equals(final o) {
