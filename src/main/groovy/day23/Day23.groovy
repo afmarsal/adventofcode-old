@@ -1,7 +1,12 @@
 package day23
 
+import util.Pair
 
+import static day23.CoordEvent.eventOf
+import static day23.CoordEventType.END
+import static day23.CoordEventType.START
 import static util.Logger.log
+import static util.Pair.pairOf
 
 class Day23 {
 
@@ -64,20 +69,33 @@ class Day23 {
     static def test2(String input) {
         def points = input.readLines().collect { Point3DAndRadius.from(it) }
 
-        def minZ = points.min { it.minZ }.minZ
-        def maxZ = points.max { it.maxZ }.maxZ
+        List<Pair<Integer, CoordEvent>> zCoords = points
+                .collectMany(pointToStartAndEndingEvents())
+                .sort(byZAndThenEventType())
 
+        log "z range: ${zCoords.first().first}..${zCoords.last().first}"
         def pointsAtZ = [:]
-        for (int z = minZ; z <= maxZ; ++z) {
-            pointsAtZ[z] = points.findAll { it.crossesZ(z) }
+        def activePoints = [] as Set
+        def zCoordIdx = 0
+        for (int z = zCoords.first().first; z <= zCoords.last().first; ++z) {
+            if ((z - zCoords.first().first) % 100_000 == 0) log "Building points for $z"
+            while (z == zCoords[zCoordIdx].first && zCoords[zCoordIdx].second.eventType == START) {
+                activePoints << zCoords[zCoordIdx++].second.point
+            }
+            pointsAtZ[z] = activePoints.collect()
+            while (z == zCoords[zCoordIdx].first && zCoords[zCoordIdx].second.eventType == END) {
+                activePoints.remove zCoords[zCoordIdx++].second.point
+            }
         }
         def mostMatchedZ = pointsAtZ.max { it.value.size() }.value.size()
         def pointsWithMostMatchesInZ = pointsAtZ.findAll { it.value.size() == mostMatchedZ }
-        log "**** Points at z with most matches: \n${pointsWithMostMatchesInZ.entrySet().join("\n")}"
+//        log "**** Points at z with most matches: \n${pointsWithMostMatchesInZ.entrySet().join("\n")}"
 
         def pointsWithMostMatches = [:]
 
         pointsWithMostMatchesInZ.each { z, List<Point3DAndRadius> pointsInZ ->
+
+            log "Processing z = $z"
             def minY = pointsInZ.min { it.minY }.minY
             def maxY = pointsInZ.max { it.maxY }.maxY
 
@@ -87,7 +105,7 @@ class Day23 {
             }
             def mostMatchedY = pointsAtY.max { it.value.size() }.value.size()
             def pointsWithMostMatchesInY = pointsAtY.findAll { it.value.size() == mostMatchedY }
-            log "==== Points at $z with most matches in Y: \n${pointsWithMostMatchesInY.entrySet().join("\n")}"
+//            log "==== Points at $z with most matches in Y: \n${pointsWithMostMatchesInY.entrySet().join("\n")}"
 
             pointsWithMostMatchesInY.each { y, List<Point3DAndRadius> pointsInY ->
                 def minX = pointsInY.min { it.minX }.minX
@@ -101,62 +119,37 @@ class Day23 {
                 def mostMatchedX = pointsAtX.max { it.value.size() }.value.size()
                 def pointsWithMostMatchesInX = pointsAtX.findAll { it.value.size() == mostMatchedX }
 
-                log "---- Points at $z,$y with most matches in x: \n${pointsWithMostMatchesInX.entrySet().join("\n")}"
+//                log "---- Points at $z,$y with most matches in x: \n${pointsWithMostMatchesInX.entrySet().join("\n")}"
                 pointsWithMostMatchesInX.each { x, pointsInX ->
                     def currentPoint = Point3D.from(x, y, z)
                     pointsWithMostMatches.merge(currentPoint, pointsInX.size(), { v1, v2 -> Math.max(v1, v2) })
                 }
             }
         }
-        log "Max points\n${pointsWithMostMatches.entrySet().join("\n")}"
         def mostMatchedTimes = pointsWithMostMatches.max { it.value }.value
         def mostMatchedPoints = pointsWithMostMatches.findAll { it.value == mostMatchedTimes }.collect { it.key }
+        log "Max points\n${mostMatchedPoints.join("\n")}"
         def myLocation = Point3D.from(0, 0, 0)
         mostMatchedPoints.min { it.distance(myLocation) }.distance(myLocation)
     }
 
+    static Closure pointToStartAndEndingEvents() {
+        { point ->
+            [pairOf(point.minZ, eventOf(START, point)), pairOf(point.maxZ, eventOf(END, point))]
+        }
+    }
+
+    static Closure byZAndThenEventType() {
+        { Pair<Integer, CoordEvent> e1, e2 ->
+            def result = e1.first <=> e2.first
+            if (result == 0) {
+                result = e1.second.eventType <=> e2.second.eventType
+            }
+            result
+        }
+    }
+
 }
 
-//
-//enum EventType {
-//    START, END
-//}
-//
-//class XEvent implements Comparable<XEvent> {
-//    EventType eventType
-//    Point3DAndRadius point
-//
-//    static XEvent eventOf(EventType eventType, Point3DAndRadius point) {
-//        new XEvent(eventType: eventType, point: point)
-//    }
-//
-//    boolean equals(final o) {
-//        if (this.is(o)) return true
-//        if (getClass() != o.class) return false
-//
-//        XEvent xEvent = (XEvent) o
-//
-//        if (eventType != xEvent.eventType) return false
-//        if (point != xEvent.point) return false
-//
-//        return true
-//    }
-//
-//    int hashCode() {
-//        int result
-//        result = (eventType != null ? eventType.hashCode() : 0)
-//        result = 31 * result + (point != null ? point.hashCode() : 0)
-//        return result
-//    }
-//
-//    @Override
-//    public String toString() {
-//        "{$eventType,$point}"
-//    }
-//
-//    @Override
-//    int compareTo(final XEvent o) {
-//        def result = eventType <=> o.eventType
-//        if (result != 0) return result
-//        point <=> o.point
-//    }
+
+

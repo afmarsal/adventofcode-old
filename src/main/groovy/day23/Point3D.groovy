@@ -15,11 +15,11 @@ class Point3D {
         if (this.is(o)) return true
         if (getClass() != o.class) return false
 
-        Point3D that = (Point3D) o
+        Point3D point3D = (Point3D) o
 
-        if (x != that.x) return false
-        if (y != that.y) return false
-        if (z != that.z) return false
+        if (x != point3D.x) return false
+        if (y != point3D.y) return false
+        if (z != point3D.z) return false
 
         return true
     }

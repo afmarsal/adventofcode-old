@@ -22,8 +22,8 @@ class Day23Test extends Specification {
 
         where:
             input    | output
-            SAMPLE_2 | 36
-//            FINAL_INPUT | 463
+//            SAMPLE_2 | 36
+            FINAL_INPUT | 463
 //            MARCAL | 314
     }
 

@@ -2,7 +2,7 @@ package day23
 
 import java.util.regex.Pattern
 
-class Point3DAndRadius extends Point3D implements Comparable<Point3DAndRadius> {
+class Point3DAndRadius extends Point3D {
 
     static final Pattern POINT3D_MATCHER = Pattern.compile(/pos=<(-?\d+),(-?\d+),(-?\d+)>, r=(-?\d+)/)
     int radius
@@ -62,34 +62,21 @@ class Point3DAndRadius extends Point3D implements Comparable<Point3DAndRadius> {
         "{$x,$y,$z,r:$radius}"
     }
 
-    @Override
-    int compareTo(final Point3DAndRadius o) {
-        def result = Integer.compare(minZ, o.minZ)
-        if (result != 0) return result
-        result = Integer.compare(minY, o.minY)
-        if (result != 0) return result
-        Integer.compare(minX, o.minX)
-    }
-
     boolean equals(final o) {
         if (this.is(o)) return true
         if (getClass() != o.class) return false
+        if (!super.equals(o)) return false
 
+        Point3DAndRadius that = (Point3DAndRadius) o
 
-        Point3DAndRadius point4D = (Point3DAndRadius) o
-
-        if (x != point4D.x) return false
-        if (y != point4D.y) return false
-        if (z != point4D.z) return false
+        if (radius != that.radius) return false
 
         return true
     }
 
     int hashCode() {
-        int result
-        result = x
-        result = 31 * result + y
-        result = 31 * result + z
+        int result = super.hashCode()
+        result = 31 * result + radius
         return result
     }
 }
